@@ -1,25 +1,27 @@
 /*
-
+PHASE 1
 interactive component for home page is user can favorite their games
-*/
-import { useState } from "react";
-import GameCard from "../components/GameCard";
 
-const topGames = [
-  { id: 1, name: "Halo Infinite", image: "/images/halo.jpg", rating: 4.5 },
-  { id: 2, name: "Minecraft", image: "/images/minecraft.jpg", rating: 4.7 },
-  { id: 3, name: "Fortnite", image: "/images/fortnite.jpg", rating: 4.2 },
-  { id: 4, name: "Elden Ring", image: "/images/eldenring.jpg", rating: 4.8 },
-  { id: 5, name: "Call of Duty", image: "/images/cod.jpg", rating: 4.1 },
-  { id: 6, name: "Cyberpunk 2077", image: "/images/cyberpunk.jpg", rating: 3.9 },
-  { id: 7, name: "Assassin's Creed", image: "/images/assassinscreed.jpg", rating: 4.3 },
-  { id: 8, name: "God of War", image: "/images/godofwar.jpg", rating: 4.9 },
-  { id: 9, name: "The Witcher 3", image: "/images/witcher3.jpg", rating: 4.8 },
-  { id: 10, name: "Super Mario Odyssey", image: "/images/mario.jpg", rating: 4.7 },
-];
+PHASE 2
+remove array and add API
+*/
+import { useState, useEffect } from "react";
+import GameCard, { GameCardImage, GameCardInfo, GameCardPlayedButton } from "../components/GameCard";
+
+const API_KEY = "b5627deffe7643e096f0ee5ef2c20b3c";
+
+type Game = {
+  id: number;
+  name: string;
+  image: string;
+  rating: number;
+};
 
 export default function HomePage() {
+  const [games, setGames] = useState<Game[]>([]);
+
   const [playedGames, setPlayedGames] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const togglePlayed = (id: number) => {
     setPlayedGames((prev) =>
@@ -27,9 +29,40 @@ export default function HomePage() {
     );
   };
 
+  //taken from game.tsx                     DO NOT FORGET TO REMOVE searchTerm
+  useEffect(() => {
+
+      const fetchTopGames = async () => {
+        setLoading(true);
+        try {
+          const response = await fetch(
+            `https://api.rawg.io/api/games?key=${API_KEY}&page_size=10&ordering=-rating`  
+          );
+          const data = await response.json();
+  
+          const formatted: Game[] = data.results.map((g: any) => ({
+            id: g.id,
+            name: g.name,
+            image: g.background_image,
+            rating: g.rating,
+          }));
+  
+          setGames(formatted);
+        } catch (error) {
+          console.error("API error:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchTopGames();
+    }, []);
+
+
   return (
     <div>
       <h1>Top 10 Games</h1>
+      {loading && <p>Loading games...</p>}
 
       <div
         style={{
@@ -39,27 +72,16 @@ export default function HomePage() {
           marginTop: "20px",
         }}
       >
-        {topGames.map((game) => (
-          <div key={game.id}>
-            <GameCard name={game.name} image={game.image} rating={game.rating} />
-            <button
-              onClick={() => togglePlayed(game.id)}
-              style={{
-                marginTop: "5px",
-                width: "100%",
-                padding: "5px",
-                borderRadius: "5px",
-                border: "none",
-                cursor: "pointer",
-                background: playedGames.includes(game.id) ? "red" : "grey",
-                color: playedGames.includes(game.id) ? "white" : "black",
-              }}
-            >
-
-              {playedGames.includes(game.id) ? "Played!" : "Played?"}
-            </button>
-            
-          </div>
+        {games.map((game) => (
+          <GameCard key={game.id}>
+            <GameCardImage image={game.image} name={game.name} />
+            <GameCardInfo name={game.name} rating={game.rating} />
+            <GameCardPlayedButton
+              id={game.id}
+              playedGames={playedGames}
+              togglePlayed={togglePlayed}
+            />
+          </GameCard>
         ))}
       </div>
     </div>

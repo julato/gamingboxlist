@@ -1,4 +1,5 @@
 /*
+PHASE 1
 Implement basic navigation between the primary pages using Next.js routing.
 Simplified routing for phase 1; will implement dynamic routing phase 2 
 
