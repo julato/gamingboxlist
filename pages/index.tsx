@@ -1,78 +1,67 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+/*
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+interactive component for home page is user can favorite their games
+*/
+import { useState } from "react";
+import GameCard from "../components/GameCard";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const topGames = [
+  { id: 1, name: "Halo Infinite", image: "/images/halo.jpg", rating: 4.5 },
+  { id: 2, name: "Minecraft", image: "/images/minecraft.jpg", rating: 4.7 },
+  { id: 3, name: "Fortnite", image: "/images/fortnite.jpg", rating: 4.2 },
+  { id: 4, name: "Elden Ring", image: "/images/eldenring.jpg", rating: 4.8 },
+  { id: 5, name: "Call of Duty", image: "/images/cod.jpg", rating: 4.1 },
+  { id: 6, name: "Cyberpunk 2077", image: "/images/cyberpunk.jpg", rating: 3.9 },
+  { id: 7, name: "Assassin's Creed", image: "/images/assassinscreed.jpg", rating: 4.3 },
+  { id: 8, name: "God of War", image: "/images/godofwar.jpg", rating: 4.9 },
+  { id: 9, name: "The Witcher 3", image: "/images/witcher3.jpg", rating: 4.8 },
+  { id: 10, name: "Super Mario Odyssey", image: "/images/mario.jpg", rating: 4.7 },
+];
 
-export default function Home() {
+export default function HomePage() {
+  const [playedGames, setPlayedGames] = useState<number[]>([]);
+
+  const togglePlayed = (id: number) => {
+    setPlayedGames((prev) =>
+      prev.includes(id) ? prev.filter((gameId) => gameId !== id) : [...prev, id]
+    );
+  };
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}
-    >
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the index.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div>
+      <h1>Top 10 Games</h1>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+          gap: "20px",
+          marginTop: "20px",
+        }}
+      >
+        {topGames.map((game) => (
+          <div key={game.id}>
+            <GameCard name={game.name} image={game.image} rating={game.rating} />
+            <button
+              onClick={() => togglePlayed(game.id)}
+              style={{
+                marginTop: "5px",
+                width: "100%",
+                padding: "5px",
+                borderRadius: "5px",
+                border: "none",
+                cursor: "pointer",
+                background: playedGames.includes(game.id) ? "red" : "grey",
+                color: playedGames.includes(game.id) ? "white" : "black",
+              }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs/pages/getting-started?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+              {playedGames.includes(game.id) ? "Played!" : "Played?"}
+            </button>
+            
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
