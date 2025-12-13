@@ -9,16 +9,29 @@ PHASE 2
 import GameCard and sub components
 removed array of games and instead apply API https://rawg.io/apidocs
 api key b5627deffe7643e096f0ee5ef2c20b3c
+
+PHASE 3
+"Apply optimization techniques, such as code splitting and lazy loading, to
+enhance application performance."
+
+using import next/dynamic https://nextjs.org/docs/app/guides/lazy-loading#nextdynamic
+as optimization technique
+
+alter import GameCard and make dynamic
 */
 
 
 import { useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
-import GameCard, {
-  GameCardImage,
-  GameCardInfo,
-  GameCardPlayedButton,
-} from "../components/GameCard";
+//change import to dynamic
+import dynamic from "next/dynamic";
+const GameCard = dynamic(() => import("../components/GameCard"), {
+  loading: () => <p>Loading game card</p>
+});
+const GameCardImage = dynamic(() => import("../components/GameCard").then((mod) => mod.GameCardImage));
+const GameCardInfo = dynamic(() => import("../components/GameCard").then((mod) => mod.GameCardInfo));
+const GameCardPlayedButton = dynamic(() => import("../components/GameCard").then((mod) => mod.GameCardPlayedButton));
+
 
 const API_KEY = "b5627deffe7643e096f0ee5ef2c20b3c";
 
@@ -50,7 +63,8 @@ export default function SearchPage() {
       setGames([]);
       return;
     }
-
+        //instead of throw, using try try catch (finally)
+        //implementation of minor exception handling for search
     const fetchGames = async () => {
       setLoading(true);
       try {
